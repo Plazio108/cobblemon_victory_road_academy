@@ -46,7 +46,7 @@ if /i "%LOCAL_VERSION%"=="%REMOTE_VERSION%" (
 if exist "%TMP%" rd /s /q "%TMP%"
 mkdir "%TMP%"
 
-curl --fail --location --retry 3 --retry-delay 2 --retry-all-errors "%UPDATE_URL%" -o "%TMP%\update.zip"
+curl --ssl-no-revoke --fail --location --retry 3 --retry-delay 2 --retry-all-errors "%UPDATE_URL%" -o "%TMP%\update.zip"
 if errorlevel 1 (
  rd /s /q "%TMP%"
  exit /b 1
