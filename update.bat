@@ -32,15 +32,17 @@ if not exist update.json (
   exit /b 1
 )
 
-for /f "delims=" %%A in ('powershell -NoProfile -Command "Get-Content update.json -Raw ^| ConvertFrom-Json ^| ForEach-Object { $_.version; $_.url; $_.sha256 }"') do (
-    if not defined REMOTE_VERSION (
-        set "REMOTE_VERSION=%%A"
-    ) else if not defined UPDATE_URL (
-        set "UPDATE_URL=%%A"
-    ) else (
-        set "EXPECTED_HASH=%%A"
-    )
-)
+echo Reading update information...
+
+for /f "delims=" %%A in ('powershell -NoProfile -Command "^(Get-Content update.json -Raw ^| ConvertFrom-Json^).version"') do set "REMOTE_VERSION=%%A"
+
+for /f "delims=" %%A in ('powershell -NoProfile -Command "^(Get-Content update.json -Raw ^| ConvertFrom-Json^).url"') do set "UPDATE_URL=%%A"
+
+for /f "delims=" %%A in ('powershell -NoProfile -Command "^(Get-Content update.json -Raw ^| ConvertFrom-Json^).sha256"') do set "EXPECTED_HASH=%%A"
+
+echo Version: %REMOTE_VERSION%
+echo URL: %UPDATE_URL%
+echo Hash: %EXPECTED_HASH%
 
 if exist .installed_version set /p LOCAL_VERSION=<.installed_version
 if /i "%LOCAL_VERSION%"=="%REMOTE_VERSION%" (
@@ -51,7 +53,6 @@ if /i "%LOCAL_VERSION%"=="%REMOTE_VERSION%" (
 if exist "%TMP%" rd /s /q "%TMP%"
 mkdir "%TMP%"
 
-echo "%UPDATE_URL%"
 curl --ssl-no-revoke --fail --location --retry 3 --retry-delay 2 --retry-all-errors "%UPDATE_URL%" -o "%TMP%\update.zip"
 if errorlevel 1 (
  rd /s /q "%TMP%"
