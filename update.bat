@@ -118,16 +118,20 @@ rem ==================================================
 
 echo Checking SHA256...
 
-for /f "tokens=1" %%H in ('certutil -hashfile "%TMP%\update.zip" SHA256 ^| findstr /R "^[0-9A-F]"') do (
-    set "HASH=%%H"
+set "HASH="
+
+for /f "skip=1 tokens=1" %%H in ('certutil -hashfile "%TMP%\update.zip" SHA256') do (
+    if not defined HASH set "HASH=%%H"
 )
+
+echo Expected:
+echo %EXPECTED_HASH%
+
+echo Got:
+echo %HASH%
 
 if /i not "%HASH%"=="%EXPECTED_HASH%" (
     echo ERROR: SHA256 mismatch.
-    echo Expected:
-    echo %EXPECTED_HASH%
-    echo Got:
-    echo %HASH%
     pause
     exit /b 1
 )
