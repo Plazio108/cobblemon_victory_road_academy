@@ -5,7 +5,7 @@ echo ==== Minecraft Updater ====
 
 set "UPDATER_DIR=%~dp0"
 set "ROOT=%UPDATER_DIR%.."
-set "REPO_DIR=%UPDATER_DIR%repo"
+set "REPO_DIR=%~dp0repo"
 set "TMP=%TEMP%\MinecraftUpdater"
 
 set "REPO_URL=https://github.com/Plazio108/cobblemon_victory_road_academy.git"
@@ -34,8 +34,9 @@ if not exist "%REPO_DIR%\.git" (
         exit /b 1
     )
 
-    echo Restarting from cloned updater...
-    call "%REPO_DIR%\update.bat"
+    echo Starting updater from repository...
+    cd /d "%REPO_DIR%"
+    call update.bat
     exit /b
 )
 
@@ -58,8 +59,9 @@ if errorlevel 1 (
         exit /b 1
     )
 
-    echo Restarting updated updater...
-    call "%REPO_DIR%\update.bat"
+    echo Starting updated updater...
+    cd /d "%REPO_DIR%"
+    call update.bat
     exit /b
 )
 
