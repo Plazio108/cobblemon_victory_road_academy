@@ -32,9 +32,14 @@ if not exist update.json (
   exit /b 1
 )
 
-for /f "usebackq delims=" %%A in (`powershell -NoProfile -Command ^
- "$j=Get-Content 'update.json' -Raw|ConvertFrom-Json;@($j.version,$j.url,$j.sha256)"`) do (
-  if not defined REMOTE_VERSION (set "REMOTE_VERSION=%%A") else if not defined UPDATE_URL (set "UPDATE_URL=%%A") else set "EXPECTED_HASH=%%A"
+for /f "delims=" %%A in ('powershell -NoProfile -Command "Get-Content update.json -Raw ^| ConvertFrom-Json ^| ForEach-Object { $_.version; $_.url; $_.sha256 }"') do (
+    if not defined REMOTE_VERSION (
+        set "REMOTE_VERSION=%%A"
+    ) else if not defined UPDATE_URL (
+        set "UPDATE_URL=%%A"
+    ) else (
+        set "EXPECTED_HASH=%%A"
+    )
 )
 
 if exist .installed_version set /p LOCAL_VERSION=<.installed_version
