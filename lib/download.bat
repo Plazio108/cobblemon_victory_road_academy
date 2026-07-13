@@ -4,11 +4,19 @@ setlocal
 set "URL=%~1"
 set "OUTPUT=%~2"
 
-if "%URL%"=="" exit /b 1
-if "%OUTPUT%"=="" exit /b 1
-
 echo Downloading:
 echo %URL%
+echo.
+
+if "%URL%"=="" (
+    echo ERROR: Missing URL
+    exit /b 1
+)
+
+if "%OUTPUT%"=="" (
+    echo ERROR: Missing output path
+    exit /b 1
+)
 
 curl --ssl-no-revoke ^
      --fail ^
@@ -20,7 +28,7 @@ curl --ssl-no-revoke ^
      -o "%OUTPUT%"
 
 if errorlevel 1 (
-    echo Download failed.
+    echo ERROR: Download failed.
     exit /b 1
 )
 

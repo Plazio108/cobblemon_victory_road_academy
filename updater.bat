@@ -47,15 +47,20 @@ set "UPDATE_URL="
 set "EXPECTED_HASH="
 
 
+set "COUNT=0"
+
 for /f "usebackq delims=" %%A in ("%UPDATER_DIR%update") do (
-    if not defined REMOTE_VERSION (
-        set "REMOTE_VERSION=%%A"
-    ) else if not defined UPDATE_URL (
-        set "UPDATE_URL=%%A"
-    ) else (
-        set "EXPECTED_HASH=%%A"
-    )
+    set /a COUNT+=1
+
+    if !COUNT! EQU 1 set "REMOTE_VERSION=%%A"
+    if !COUNT! EQU 2 set "UPDATE_URL=%%A"
+    if !COUNT! EQU 3 set "EXPECTED_HASH=%%A"
 )
+
+rem Remove possible quotes
+set "EXPECTED_HASH=%EXPECTED_HASH:"=%"
+set "UPDATE_URL=%UPDATE_URL:"=%"
+set "REMOTE_VERSION=%REMOTE_VERSION:"=%"
 
 
 echo.
@@ -97,9 +102,7 @@ if exist "%TMP%" (
 mkdir "%TMP%"
 
 
-call "%UPDATER_DIR%lib\download.bat" ^
-"%UPDATE_URL%" ^
-"%TMP%\modpack.zip"
+call "%UPDATER_DIR%lib\download.bat" "%UPDATE_URL%" "%TMP%\modpack.zip"
 
 
 if errorlevel 1 (
@@ -113,9 +116,7 @@ rem ==================================================
 rem Verify hash
 rem ==================================================
 
-call "%UPDATER_DIR%lib\verify.bat" ^
-"%TMP%\modpack.zip" ^
-"%EXPECTED_HASH%"
+call "%UPDATER_DIR%lib\verify.bat" "%TMP%\modpack.zip" "%EXPECTED_HASH%"
 
 
 if errorlevel 1 (
@@ -129,8 +130,7 @@ rem ==================================================
 rem Install update
 rem ==================================================
 
-call "%UPDATER_DIR%lib\install.bat" ^
-"%TMP%\modpack.zip"
+call "%UPDATER_DIR%lib\install.bat" "%TMP%\modpack.zip"
 
 
 if errorlevel 1 (
